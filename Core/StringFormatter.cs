@@ -1,4 +1,4 @@
-﻿namespace Lab5
+﻿namespace Lab5.Core
 {
     public class StringFormatter
     {
