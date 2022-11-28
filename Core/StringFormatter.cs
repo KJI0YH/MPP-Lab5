@@ -1,7 +1,22 @@
-﻿namespace Lab5.Core
+﻿using Lab5.Core.Interfaces;
+using Lab5.Core.Services;
+
+namespace Lab5.Core
 {
-    public class StringFormatter
+    public class StringFormatter : IStringFormatter
     {
+        public static readonly StringFormatter Shared = new StringFormatter();
+        private IExpressionCashe _cashe;
+
+        public StringFormatter()
+        {
+            _cashe = new ExpressionCashe();
+        }
+        public StringFormatter(IExpressionCashe cashe)
+        {
+            _cashe = cashe;
+        }
+
         private enum CharType
         {
             ctUnknown,
@@ -65,14 +80,41 @@
             return CharType.ctUnknown;
         }
 
-        public bool Parse(string str)
+        public string Format(string template, object target)
         {
             int state = 1;
-            for (int i = 0; i < str.Length; i++)
+            int prevState = state;
+            int startPos = 0;
+            string result = "";
+            for (int i = 0; i < template.Length; i++)
             {
-                state = Transitions[state, (int)GetCharType(str[i])];
+                prevState = state;
+                state = Transitions[state, (int)GetCharType(template[i])];
+
+                switch (state)
+                {
+                    case 0:
+                        throw new ArgumentException($"Invalid template, position {i}");
+                    case 1:
+                        if (prevState == 4 || prevState == 7)
+                        {
+                            result += _cashe.GetOrAdd(template.AsMemory(startPos, i - startPos).ToString(), target);
+                        }
+                        else
+                        {
+                            result += template[i];
+                        }
+                        break;
+                    case 4:
+                        if (prevState == 2)
+                            startPos = i;
+                        break;
+                }
             }
-            return IsFinalState[state];
+            if (IsFinalState[state])
+                return result;
+            else
+                throw new ArgumentException($"Invalid template, position {template.Length - 1}");
         }
     }
 }
