@@ -83,7 +83,7 @@ namespace Lab5.Core
         public string Format(string template, object target)
         {
             int state = 1;
-            int prevState = state;
+            int prevState;
             int startPos = 0;
             string result = "";
             for (int i = 0; i < template.Length; i++)

@@ -24,15 +24,12 @@ namespace Lab5.Core.Services
                 if (fields.Where(field => field.Name == id[0]).Any() ||
                     properties.Where(property => property.Name == id[0]).Any())
                 {
-
                     var objParam = Expression.Parameter(typeof(object), "obj");
-
-
                     Expression propertyOrField;
                     if (id.Length > 1)
                     {
                         var array = Expression.PropertyOrField(Expression.TypeAs(objParam, target.GetType()), id[0]);
-                        propertyOrField = Expression.ArrayIndex(array, Expression.Constant(int.Parse(id[1]), typeof(int)));
+                        propertyOrField = Expression.ArrayAccess(array, Expression.Constant(int.Parse(id[1]), typeof(int)));
                     }
                     else
                     {
