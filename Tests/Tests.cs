@@ -112,28 +112,20 @@ namespace Tests
             return true;
         }
 
-        public class User
+        [Test]
+        public void CasheTest()
         {
-            public string FirstName { get; }
-            public string LastName { get; }
-            public string[] Orders { get; }
-            public int[] Ints { get; }
-
-            public User(string firstName, string lastName, string[] orders)
+            User user = new User("Aliaksei", "Kryzhanouski", new string[] { "sleep" });
+            TestCashe testCashe = new TestCashe();
+            StringFormatter stringFormatter = new StringFormatter(testCashe);
+            string result = stringFormatter.Format("User {FirstName} {LastName} order {Orders[0]}", user);
+            string casheResult = stringFormatter.Format("User {FirstName} {LastName} order {Orders[0]}", user);
+            Assert.Multiple(() =>
             {
-                FirstName = firstName;
-                LastName = lastName;
-                Orders = orders;
-            }
-
-            public User(string firstName, string lastName, string[] orders, int[] ints)
-            {
-                FirstName = firstName;
-                LastName = lastName;
-                Orders = orders;
-                Ints = ints;
-            }
-
+                Assert.That(result.Equals($"User {user.FirstName} {user.LastName} order {user.Orders[0]}"));
+                Assert.That(casheResult.Equals($"User {user.FirstName} {user.LastName} order {user.Orders[0]}"));
+                Assert.That(testCashe.CasheContain, Is.EqualTo(3));
+            });
         }
     }
 }

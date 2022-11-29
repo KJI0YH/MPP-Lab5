@@ -6,9 +6,9 @@ namespace Lab5.Core.Services
 {
     public class ExpressionCashe : IExpressionCashe
     {
-        private readonly ConcurrentDictionary<string, Func<object, string>> _cashe = new();
+        protected readonly ConcurrentDictionary<string, Func<object, string>> _cashe = new();
 
-        public string GetOrAdd(string identificator, object target)
+        public virtual string GetOrAdd(string identificator, object target)
         {
             string key = $"{target.GetType()}.{identificator}";
             Func<object, string> result;
